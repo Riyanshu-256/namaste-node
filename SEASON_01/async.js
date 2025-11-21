@@ -16,6 +16,7 @@ setTimeout(() => {
     console.log("setTimeout called after 5 seconds");
 }, 5000);
 
+// ASYNC FUNCTION
 // To read the code of the path of file.txt
 fs.readFile("./file.txt", "utf8", (err, data) => {
     console.log("File Data :", data);
