@@ -12,7 +12,7 @@ console.log("Key is generated");
 
 setTimeout(() => {
     console.log("call me right now");
-}, 0); 
+}, 0);  // It will called once main thread is empty
 
 function multiplyFn(x, y) {
     const result = x * y;
