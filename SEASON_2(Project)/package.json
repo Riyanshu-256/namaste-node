@@ -1,0 +1,19 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "tinder",
+  "main": "tinder for devs",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "nodejs",
+    "javascript"
+  ],
+  "author": "Akshay Saini",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
