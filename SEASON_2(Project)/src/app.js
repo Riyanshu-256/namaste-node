@@ -4,7 +4,7 @@ const express = require("express");
 // to create application
 const app = express();
 
-// to handle request
+// to handle request for "/" , "/test", "/hello"
 app.use("/test", (req, res) => {
     res.send("Hello from the server");
 });
