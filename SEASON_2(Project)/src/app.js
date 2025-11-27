@@ -4,6 +4,19 @@ const express = require("express");
 // to create application
 const app = express();
 
+
+app.get("/user/:userId/:name/:password", (req, res) => {
+    console.log(req.params);
+    res.send({
+        firstName: "Riyanshu",
+        lastName: "Sharma",
+        city: "Koderma",
+        age: 22
+    })
+});
+
+//-------------------------------------------------------------------------------------------------------------------------------------//
+/*
 // This will only handle GET call to /user
 app.get("/user", (req, res) => {
     res.send({
@@ -22,7 +35,10 @@ app.post("/user", (req, res) => {
 app.delete("/user", (req, res) => {
     res.send("Deleted successfully");
 });
+*/
 
+//-----------------------------------------------------------------------------------------------------------------------------------------//
+/*
 // THIS WILL MATCH ALL THE HTTP METHOD API CALLS /test
 // to handle request for "/" , "/test", "/hello"
 app.use("/", (req, res) => {
@@ -37,6 +53,7 @@ app.use("/test", (req, res) => {
 app.use("/hello", (req, res) => {
     res.send("Hello what are you doing???");
 });
+*/
 
 // listen on port => so everybody connect to us
 app.listen(3000, () => {
