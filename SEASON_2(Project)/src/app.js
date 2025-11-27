@@ -31,16 +31,6 @@ app.get(
     },
 );
 
-// app.get("/user/:userId/:name/:password", (req, res) => {
-//     console.log(req.params);
-//     res.send({
-//         firstName: "Riyanshu",
-//         lastName: "Sharma",
-//         city: "Koderma",
-//         age: 22
-//     })
-// });
-
 //-------------------------------------------------------------------------------------------------------------------------------------//
 /*
 // This will only handle GET call to /user
