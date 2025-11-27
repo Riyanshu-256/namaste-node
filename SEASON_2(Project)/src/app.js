@@ -1,26 +1,29 @@
 // to create server
 const express = require("express");
+const { adminAuth, userAuth } = require("./middleware/auth");
 
 // to create application
 const app = express();
 
-// Middleware
-app.use("/", (req, res, next) => {
-    res.send("Handling the middleware!!!");
-    next();
+// Handle Auth Middleware for all GET POST, ... requests
+app.use("/admin", adminAuth);
+app.use("/user ", userAuth);
+
+app.post("/user/login", (req, res) => {
+    res.send("User logged in successfully!!!");
 });
 
-app.get(
-    "/user",
-    (req, res, next) => {
-        console.log("Handling the route user!!!");
-        next();
-    },
-    (req, res, next) => {
-        console.log("Handling the route user 2!!!");
-        res.send("2nd Response!!");
-    }
-);
+app.get("/user", (req, res) => {
+    res.send("User Data Sent");
+});
+
+app.get("/admin/getAllData", (req, res) => {
+    res.send("All Data Sent");
+});
+
+app.get("/admin/deleteUser", (req, res) => {
+    res.send("Deleted a user");
+});
 
 //-------------------------------------------------------------------------------------------------------------------------------------//
 /*
