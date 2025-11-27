@@ -5,6 +5,7 @@ const express = require("express");
 // to create application
 const app = express();
 
+// ERROR HANDLING
 app.get("/getUserData", (req, res) => {
     // try {
     //  Logic of DB call and get user data
@@ -22,6 +23,8 @@ app.use("/", (err, req, res, next) => {
         res.status(500).send("something went wrong");
     }
 });
+
+//---------------------------------------------------------------------------------------------//
 
 /*
 // Handle Auth Middleware for all GET POST, ... requests
