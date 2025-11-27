@@ -1,10 +1,29 @@
 // to create server
 const express = require("express");
-const { adminAuth, userAuth } = require("./middleware/auth");
+// const { adminAuth, userAuth } = require("./middleware/auth");
 
 // to create application
 const app = express();
 
+app.get("/getUserData", (req, res) => {
+    // try {
+    //  Logic of DB call and get user data
+
+    throw new Error("dvbzhjf");
+    res.send("User Data Sent");
+    // } catch (err) {
+    //   res.status(500).send("Some Error contact support team");
+    // }
+});
+
+app.use("/", (err, req, res, next) => {
+    if (err) {
+        // Log your error
+        res.status(500).send("something went wrong");
+    }
+});
+
+/*
 // Handle Auth Middleware for all GET POST, ... requests
 app.use("/admin", adminAuth);
 app.use("/user ", userAuth);
@@ -23,7 +42,7 @@ app.get("/admin/getAllData", (req, res) => {
 
 app.get("/admin/deleteUser", (req, res) => {
     res.send("Deleted a user");
-});
+}); */ 
 
 //-------------------------------------------------------------------------------------------------------------------------------------//
 /*
