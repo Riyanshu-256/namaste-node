@@ -13,7 +13,7 @@ app.post("/user/login", (req, res) => {
     res.send("User logged in successfully!!!");
 });
 
-app.get("/user", (req, res) => {
+app.get("/user/data", (req, res) => {
     res.send("User Data Sent");
 });
 
