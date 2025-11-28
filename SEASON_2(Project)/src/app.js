@@ -1,93 +1,43 @@
 // to create server
 const express = require("express");
-// const { adminAuth, userAuth } = require("./middleware/auth");
+
+// To connect database
+const connectDB = require("./config/database");
+
+// To connect user model
+const User = require("./models/user");
 
 // to create application
 const app = express();
 
-// ERROR HANDLING
-app.get("/getUserData", (req, res) => {
-    // try {
-    //  Logic of DB call and get user data
+app.post("/signup", async (req, res) => {
 
-    throw new Error("dvbzhjf");
-    res.send("User Data Sent");
-    // } catch (err) {
-    //   res.status(500).send("Some Error contact support team");
-    // }
-});
-
-app.use("/", (err, req, res, next) => {
-    if (err) {
-        // Log your error
-        res.status(500).send("something went wrong");
-    }
-});
-
-//---------------------------------------------------------------------------------------------//
-
-/*
-// Handle Auth Middleware for all GET POST, ... requests
-app.use("/admin", adminAuth);
-app.use("/user ", userAuth);
-
-app.post("/user/login", (req, res) => {
-    res.send("User logged in successfully!!!");
-});
-
-app.get("/user/data", (req, res) => {
-    res.send("User Data Sent");
-});
-
-app.get("/admin/getAllData", (req, res) => {
-    res.send("All Data Sent");
-});
-
-app.get("/admin/deleteUser", (req, res) => {
-    res.send("Deleted a user");
-}); */ 
-
-//-------------------------------------------------------------------------------------------------------------------------------------//
-/*
-// This will only handle GET call to /user
-app.get("/user", (req, res) => {
-    res.send({
+    // Creating a new instance of the User model
+    const user = new User({
         firstName: "Riyanshu",
         lastName: "Sharma",
-        city: "Koderma",
-        age: 22
+        emailId: "riyanshu062@gmail.com",
+        password: "riya@1234"
+    });
+    try {
+        await user.save();
+    res.send("User added successfully!!!");
+    } catch (err){
+        res.send(401).send("Error saving the user:" + err.message);
+    }
+})
+
+
+// Firstly call the connectDB(), try to connect to the database
+connectDB()
+    .then(() => {
+        console.log("Database connection established...");
+        // If database is connected, then start our server on port 3000
+        app.listen(3000, () => {
+            console.log("Server is successfully listening on port 3000...");
+        });
     })
-});
-
-app.post("/user", (req, res) => {
-    // Save data to the database
-    res.send("Data successfully saved to the database!");
-});
-
-app.delete("/user", (req, res) => {
-    res.send("Deleted successfully");
-});
-*/
-
-//-----------------------------------------------------------------------------------------------------------------------------------------//
-/*
-// THIS WILL MATCH ALL THE HTTP METHOD API CALLS /test
-// to handle request for "/" , "/test", "/hello"
-app.use("/", (req, res) => {
-    res.send("Hello from the empty soul");
-});
-
-app.use("/test", (req, res) => {
-    res.send("Hello from the server");
-});
-
-
-app.use("/hello", (req, res) => {
-    res.send("Hello what are you doing???");
-});
-*/
-
-// listen on port => so everybody connect to us
-app.listen(3000, () => {
-    console.log("Server is successfully listening on port 3000...");
-});
+    .catch((err) => {
+        // If database connection fails, show this error message
+        console.error("Database cannot be connected")
+    });
