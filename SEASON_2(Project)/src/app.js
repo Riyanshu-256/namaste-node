@@ -14,10 +14,10 @@ app.post("/signup", async (req, res) => {
 
     // Creating a new instance of the User model
     const user = new User({
-        firstName: "Riyanshu",
+        firstName: "Aditya",
         lastName: "Sharma",
-        emailId: "riyanshu062@gmail.com",
-        password: "riya@1234"
+        emailId: "aditya@gmail.com",
+        password: "aditya@1234"
     });
     try {
         await user.save();
