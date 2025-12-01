@@ -7,22 +7,70 @@ const connectDB = require("./config/database");
 // To connect user model
 const User = require("./models/user");
 
+// To connect validation
+const {validateSignUpData} = require("./utils/validation");
+
+// importing bcrypt library for hashing passwords
+const bcrypt = require("bcrypt");
+
 // to create application
 const app = express();
 
 app.use(express.json());
 
+// SIGNUP
 app.post("/signup", async (req, res) => {
 
-    // Creating a new instance of the User model
-    const user = new User(req.body);
     try {
+    // VALIDATION OF DATA 
+    validateSignUpData(req);
+    const {firstName, lastName, emailId, password} = req.body;
+
+    // ENCRYPT THE PASSWORD
+    const passwordHash = await bcrypt.hash(password, 10);  // hashing(to encypt your password, bcrypt uses hash) the password with 10 salt rounds
+    console.log(passwordHash);
+
+    // To store the data => Creating a new instance of the User model
+    const user = new User({
+        firstName,
+        lastName,
+        emailId,
+        password: passwordHash,
+    });
+    
         await user.save();
     res.send("User added successfully!!!");
     } catch (err){
-        res.status (401).send("Error saving the user:" + err.message);
+        res.status (401).send("ERROR :" + err.message);
     }
 });
+
+// LOGIN
+    app.post("/login", async (req, res) => {
+    try {
+        // extract the emailId and password from the request body
+        const { emailId, password } = req.body;
+
+        // Make sure that 'emailId' matches the field name in your DB
+        const user = await User.findOne({ emailId: emailId });
+        if (!user) {
+            throw new Error("Invalid credentials");
+        }
+
+        // We used bacrypt library to compare the emailId and password is correct or not
+        // Compare input password with hashed password stored in DB
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (isPasswordValid) {
+            res.send("Login Successfully!!");
+        } else {
+            throw new Error("Invalid credentials");
+        }
+
+    } catch (err) {
+        res.status(401).send("ERROR : " + err.message);
+    }});
+
 
 // How to find 1 user from the database
 app.get("/user", async (req, res) => {
@@ -34,7 +82,7 @@ app.get("/user", async (req, res) => {
         // Find one users matching the given emailId
         const users = await User.findOne({ emailId: userEmail });
         if (!users){ 
-            res.status(404).send("User not found");
+            res.status(401).send("User not found");
         } else {
             res.send(users);
         }
