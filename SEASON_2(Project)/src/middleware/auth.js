@@ -1,30 +1,49 @@
-const adminAuth = (req, res, next) => {
-    console.log("Admin auth is getting checked!!");
+// it verifies the JWT token, fetches the user from the database, and attaches the user to req.user so that only logged-in users can access protected routes.
 
-    const token = "xyz";
-    const isAdminAuthorized = token === "xyz";
+// Importing JWT package to verify tokens
+const jwt = require("jsonwebtoken");
 
-    if (!isAdminAuthorized) {
-        res.status(401).send("Unauthorized request");
-    } else {
+// Importing User model to fetch user data from database
+const User = require("../models/user");
+
+// Middleware function to authenticate user
+const userAuth = async (req, res, next) => {
+    try {
+        // Extracting token from cookies
+        const { token } = req.cookies;
+
+        // If token is not valid
+        if(!token){
+            throw new Error("Token is not valid");
+        }
+
+        // Verifying the token using secret key
+        const decodedObj = await jwt.verify(token, "DEV@Tinder$790");
+
+        // Extracting user ID from decoded token
+        const { _id } = decodedObj;
+
+        // Finding the user in the database
+        const user = await User.findById(_id);
+
+        // If user does not exist, throw an error
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        // Attaching found user to request object
+        req.user = user;
+
+        // Passing control to next middleware
         next();
+    }
+    catch (err) {
+        // Sending error message if anything fails
+        res.status(401 ).send("ERROR: " + err.message);
     }
 };
 
-const userAuth = (req, res, next) => {
-    console.log("Admin auth is getting checked!!");
-
-    const token = "xyz";
-    const isAdminAuthorized = token === "xyz";
-
-    if (!isAdminAuthorized) {
-        res.status(401).send("Unauthorized request");
-    } else {
-        next();
-    }
-};
-
+// Exporting the middleware to use in other files
 module.exports = {
-    adminAuth,
-    userAuth
-}
+    userAuth,
+};
