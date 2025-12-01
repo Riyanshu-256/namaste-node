@@ -57,7 +57,7 @@ app.post("/signup", async (req, res) => {
             throw new Error("Invalid credentials");
         }
 
-        // We used bacrypt library to compare the emailId and password is correct or not
+        // We used bcrypt library to compare the emailId and password is correct or not
         // Compare input password with hashed password stored in DB
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
