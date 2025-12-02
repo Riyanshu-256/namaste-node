@@ -1,6 +1,6 @@
 const validator = require("validator");
 
-// validation of data using helper function
+// VALIDATION OF SIGNUP DATA
 const validateSignUpData = (req) => {
     const { firstName, lastName, emailId, password } = req.body;
 
@@ -13,6 +13,8 @@ const validateSignUpData = (req) => {
     if (!validator.isStrongPassword(password)) {
         throw new Error("Please enter a strong password!");
     }
+
+    return true;
 };
 
 // VALIDATE EDIT PROFILE DATA

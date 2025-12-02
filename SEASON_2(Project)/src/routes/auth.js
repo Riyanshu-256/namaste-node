@@ -47,27 +47,34 @@ authRouter.post("/login", async (req, res) => {
         const { emailId, password } = req.body;
 
         const user = await User.findOne({ emailId });
-        if (!user){
+        if (!user) {
             throw new Error("Invalid credentials");
-        } 
+        }
 
         const isPasswordValid = await user.validatePassword(password);
-
         if (!isPasswordValid) throw new Error("Invalid credentials");
 
-        // calls the getJWT() function on the user and gets a new token for that user.
-        const token = await user.getJWT();
+        // Generate JWT
+        const { token } = req.cookies;
+        if (!token) throw new Error("Token is not valid");
 
-        // Add the token to cookie
+
+        // Set cookie properly
         res.cookie("token", token, {
+            httpOnly: true, 
+            secure: false, // false for local testing
+            sameSite: "lax",
+            path: "/", 
             expires: new Date(Date.now() + 8 * 3600000),
         });
+
         res.send("Login Successfully!!");
 
     } catch (err) {
         res.status(401).send("ERROR : " + err.message);
     }
 });
+
 
 // LOGOUT: Remove the token cookie immediately to log the user out
 authRouter.post("/logout", async (req, res) => {
