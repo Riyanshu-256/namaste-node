@@ -1,57 +1,61 @@
-// it verifies the JWT token, fetches the user from the database, and attaches the user to req.user so that only logged-in users can access protected routes.
+// This file checks the JWT token, finds the user in the database,
+// and attaches the user to req.user so only logged-in users can access protected routes.
 
 // Importing JWT package to verify tokens
 const jwt = require("jsonwebtoken");
 
-// Importing User model to fetch user data from database
+// Importing User model to fetch user details from database
 const User = require("../models/user");
 
 // Middleware function to authenticate user
 const userAuth = async (req, res, next) => {
     try {
-        // Extracting token from cookies or Authorization header
+        // Step 1: Try extracting token from cookies
         let token = req.cookies?.token;
         
-        // If token is not in cookies, try to get it from Authorization header
+        // Step 2: If token not found in cookies, check "Authorization" header
         if (!token) {
             const authHeader = req.headers.authorization;
+
+            // Format should be:  Authorization: Bearer <token>
             if (authHeader && authHeader.startsWith("Bearer ")) {
-                token = authHeader.substring(7); // Remove "Bearer " prefix
+                // Extract token by removing "Bearer "
+                token = authHeader.substring(7);
             }
         }
 
-        // If token is not valid
-        if(!token){
+        // Step 3: If still no token found → block the request
+        if (!token) {
             throw new Error("Token is not valid");
         }
 
-        // Verifying the token using secret key
+        // Step 4: Verify the token using the secret key
         const decodedObj = await jwt.verify(token, "DEV@Tinder$790");
 
-        // Extracting user ID from decoded token
+        // Step 5: Extract user ID from decoded token
         const { _id } = decodedObj;
 
-        // Finding the user in the database
+        // Step 6: Find user in the database with the decoded ID
         const user = await User.findById(_id);
 
-        // If user does not exist, throw an error
+        // Step 7: If user doesn't exist, throw error
         if (!user) {
             throw new Error("User not found");
         }
 
-        // Attaching found user to request object
+        // Step 8: Add user data to req.user so next route can access it
         req.user = user;
 
-        // Passing control to next middleware
+        // Step 9: Move to next middleware/route
         next();
     }
     catch (err) {
-        // Sending error message if anything fails
-        res.status(401 ).send("ERROR: " + err.message);
+        // Step 10: If any error happens, send 401 Unauthorized
+        res.status(401).send("ERROR: " + err.message);
     }
 };
 
-// Exporting the middleware to use in other files
+// Exporting middleware for use in other files
 module.exports = {
     userAuth,
 };

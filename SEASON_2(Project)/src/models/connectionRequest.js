@@ -1,26 +1,21 @@
-// This file defines the connection request between two users.
-// Importing mongoose to create schema and model.
+// Import mongoose
 const mongoose = require("mongoose");
 
-// Creating a schema for connection requests.
-// This schema will store who sent the request and who received it.
+// Create schema
 const connectionRequestSchema = new mongoose.Schema(
   {
-    // ID of the user who is sending the connection request.
     fromUserId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
 
-    // ID of the user who is receiving the connection request.
     toUserId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
 
-    // Status of the connection request.
     status: {
       type: String,
       required: true,
@@ -35,11 +30,18 @@ const connectionRequestSchema = new mongoose.Schema(
   }
 );
 
-// Creating the model correctly (NO 'new' keyword)
+connectionRequestSchema.pre("send", function (next) {
+  // Stop request if user sends request to themselves
+  if (this.fromUserId.equals(this.toUserId)) {
+    return next(new Error("Cannot send connection request to yourself!"));
+  }
+  next();
+});
+
+// Create model
 const ConnectionRequest = mongoose.model(
   "ConnectionRequest",
   connectionRequestSchema
 );
 
-// Exporting the model
 module.exports = ConnectionRequest;

@@ -1,18 +1,44 @@
 const express = require("express");
-
 const requestRouter = express.Router();
 
-// To connect with userAuth
-const {userAuth} = require("../middleware/auth");
+// Middleware
+const { userAuth } = require("../middleware/auth");
+
+// Models
 const ConnectionRequest = require("../models/connectionRequest");
+const User = require("../models/user");
 
-// send connection request
-requestRouter.post("/request/send/status/:toUserId", userAuth, async(req, res) => {
 
+// ---------------------------------------------------------------------
+// 📌 SEND CONNECTION REQUEST
+// POST → /request/send/:status/:toUserId
+// ---------------------------------------------------------------------
+
+requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) => {
     try {
         const fromUserId = req.user._id;
         const toUserId = req.params.toUserId;
-        const status = req.params.toUserId;
+        const status = req.params.status;
+
+        const allowedStatus = ["ignored", "interested"];
+        if (!allowedStatus.includes(status)) {
+            return res.status(400).json({ message: "Invalid status" });
+        }
+
+        if (fromUserId.toString() === toUserId) {
+            return next(new Error("You cannot send request to yourself!"));
+        }
+
+        const existing = await ConnectionRequest.findOne({
+            $or: [
+                { fromUserId, toUserId },
+                { fromUserId: toUserId, toUserId: fromUserId }
+            ]
+        });
+
+        if (existing) {
+            return res.status(400).json({ message: "Request already exists!" });
+        }
 
         const connectionRequest = new ConnectionRequest({
             fromUserId,
@@ -20,18 +46,13 @@ requestRouter.post("/request/send/status/:toUserId", userAuth, async(req, res) =
             status,
         });
 
-        // connectionRequest will save it into DB
         const data = await connectionRequest.save();
 
-        res.json({
-            message: "Connection Request Sent Successfully",
-            data,
-        });
+        res.json({ message: req.user.firstName + "is " + status + " in " + toUserId.firstName, data});
 
-    } catch(err){
-        res.status(401).send("ERROR: " + err.message);
+    } catch (err) {
+        next(err);
     }
-    res.send(userAuth.firstName + "Sent the connection request!");
-})
+});
 
 module.exports = requestRouter;

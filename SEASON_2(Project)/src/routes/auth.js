@@ -41,41 +41,40 @@ authRouter.post("/signup", async (req, res) => {
     }
 });
 
-// LOGIN
+// LOGIN ROUTE
 authRouter.post("/login", async (req, res) => {
     try {
         const { emailId, password } = req.body;
 
         const user = await User.findOne({ emailId });
         if (!user) {
-            throw new Error("Invalid credentials");
+            return res.status(401).send("Invalid email or password");
         }
 
-        const isPasswordValid = await user.validatePassword(password);
-        if (!isPasswordValid) throw new Error("Invalid credentials");
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).send("Invalid email or password");
+        }
 
-        // Generate JWT
+        // token generate
         const token = await user.getJWT();
 
-        // Set cookie properly
+        // ADD THIS PART ↓↓↓
         res.cookie("token", token, {
-            httpOnly: true, 
-            secure: false, // false for local testing
-            sameSite: "lax",
-            path: "/", 
-            expires: new Date(Date.now() + 8 * 3600000),
+            httpOnly: true,
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         });
+        // ↑↑↑ VERY IMPORTANT
 
-        // Return token in response body for easy use in Postman Authorization header
-        res.json({
+        res.status(200).json({
             message: "Login Successfully!!",
-            token: token
+            token,
         });
-
     } catch (err) {
-        res.status(401).send("ERROR : " + err.message);
+        res.status(500).send("ERROR: " + err.message);
     }
 });
+
 
 
 // LOGOUT: Remove the token cookie immediately to log the user out
