@@ -55,9 +55,7 @@ authRouter.post("/login", async (req, res) => {
         if (!isPasswordValid) throw new Error("Invalid credentials");
 
         // Generate JWT
-        const { token } = req.cookies;
-        if (!token) throw new Error("Token is not valid");
-
+        const token = await user.getJWT();
 
         // Set cookie properly
         res.cookie("token", token, {
@@ -68,7 +66,11 @@ authRouter.post("/login", async (req, res) => {
             expires: new Date(Date.now() + 8 * 3600000),
         });
 
-        res.send("Login Successfully!!");
+        // Return token in response body for easy use in Postman Authorization header
+        res.json({
+            message: "Login Successfully!!",
+            token: token
+        });
 
     } catch (err) {
         res.status(401).send("ERROR : " + err.message);

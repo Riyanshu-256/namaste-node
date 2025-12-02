@@ -9,8 +9,16 @@ const User = require("../models/user");
 // Middleware function to authenticate user
 const userAuth = async (req, res, next) => {
     try {
-        // Extracting token from cookies
-        const { token } = req.cookies;
+        // Extracting token from cookies or Authorization header
+        let token = req.cookies?.token;
+        
+        // If token is not in cookies, try to get it from Authorization header
+        if (!token) {
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7); // Remove "Bearer " prefix
+            }
+        }
 
         // If token is not valid
         if(!token){
