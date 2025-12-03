@@ -15,6 +15,7 @@ const bcrypt = require("bcrypt");
 
 // import jwt token
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("../middleware/auth");
 
 // SIGNUP
 authRouter.post("/signup", async (req, res) => {

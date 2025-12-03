@@ -65,35 +65,89 @@ requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) =
 // REVIEW REQUEST (ACCEPT / REJECT)
 // Correct Route → POST /request/review/:status/:requestId
 
-requestRouter.post("/review/:status/:requestId", userAuth, async (req, res) => {
+// requestRouter.post("/review/:status/:requestId", userAuth, async (req, res) => {
+//     try {
+//         const loggedInUser = req.user;
+//         const { status, requestId } = req.params;
+
+//         const allowedStatus = ["accepted", "rejected"];
+//         if (!allowedStatus.includes(status)) {
+//             return res.status(401).json({ message: "Invalid status" });
+//         }
+
+//         const connectionRequest = await ConnectionRequest.findOne({
+//             _id: requestId,
+//             toUserId: loggedInUser._id,
+//             status: "interested"
+//         });
+
+//         if (!connectionRequest) {
+//             return res.status(401).json({ message: "Connection request not found" });
+//         }
+
+//         connectionRequest.status = status;
+
+//         const data = await connectionRequest.save();
+
+//         res.json({ message: "Connection request " + status, data });
+
+//     } catch (err) {
+//         res.status(401).send("ERROR: " + err.message);
+//     }
+// });
+
+// respond to connection request (accept and reject) - POST /request/review/:status/:fromUserId
+requestRouter.post("/review/:status/:fromUserId", userAuth, async (req, res, next) => {
+    const toUserId = req.user._id;
+    const fromUserId = req.params.fromUserId;
+    const status = req.params.status;
+
+    // validating status
+    const allowedStatuses = ["accepted", "rejected"];
+    if (!allowedStatuses.includes(status)) {
+        res.status(400);
+        res.json({ message: "Status must be either accepted or rejected." });
+        return;
+    }
+    // checking if connection request exists
+    const existingRequest = await ConnectionRequest.findOne({ fromUserId, toUserId });
+    if (!existingRequest) {
+        res.status(404);
+        res.json({ message: "No connection request found from this user." });
+        return;
+    }
+    // checking if the request has already been reviewed
+    if (existingRequest.status === "accepted" || existingRequest.status === "rejected") {
+        res.status(400);
+        res.json({ message: "This connection request has already been reviewed." });
+        return;
+    }
+    // checking if fromUserId exists
+    const fromUser = await User.findById(fromUserId);
+    if (!fromUser) {
+        res.status(404);
+        res.json({ message: "The user who sent the connection request does not exist." });
+        return;
+    }
+    // preventing users from reviewing their own requests
+    if (fromUserId.toString() === toUserId.toString()) {
+        res.status(400);
+        res.json({ message: "You cannot review your own connection request." });
+        return;
+    }
+    // updating the connection request status
     try {
-        const loggedInUser = req.user;
-        const { status, requestId } = req.params;
-
-        const allowedStatus = ["accepted", "rejected"];
-        if (!allowedStatus.includes(status)) {
-            return res.status(401).json({ message: "Invalid status" });
-        }
-
-        const connectionRequest = await ConnectionRequest.findOne({
-            _id: requestId,
-            toUserId: loggedInUser._id,
-            status: "interested"
-        });
-
-        if (!connectionRequest) {
-            return res.status(401).json({ message: "Connection request not found" });
-        }
-
-        connectionRequest.status = status;
-
-        const data = await connectionRequest.save();
-
-        res.json({ message: "Connection request " + status, data });
-
-    } catch (err) {
-        res.status(401).send("ERROR: " + err.message);
+        existingRequest.status = status;
+        await existingRequest.save();
+        res.status(200);
+        res.json({ message: "Connection request reviewed successfully", request: existingRequest });
+        console.log(`Connection request from user ${User.findById(fromUserId).firstName} to user ${req.user.firstName} updated to status ${status} successfully...`);
+    } catch (error) {
+        res.status(500);
+        res.json({ message: "Error reviewing connection request" });
     }
 });
+
+
 
 module.exports = requestRouter;
