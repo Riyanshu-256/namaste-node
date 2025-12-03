@@ -65,36 +65,7 @@ requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) =
 // REVIEW REQUEST (ACCEPT / REJECT)
 // Correct Route → POST /request/review/:status/:requestId
 
-// requestRouter.post("/review/:status/:requestId", userAuth, async (req, res) => {
-//     try {
-//         const loggedInUser = req.user;
-//         const { status, requestId } = req.params;
 
-//         const allowedStatus = ["accepted", "rejected"];
-//         if (!allowedStatus.includes(status)) {
-//             return res.status(401).json({ message: "Invalid status" });
-//         }
-
-//         const connectionRequest = await ConnectionRequest.findOne({
-//             _id: requestId,
-//             toUserId: loggedInUser._id,
-//             status: "interested"
-//         });
-
-//         if (!connectionRequest) {
-//             return res.status(401).json({ message: "Connection request not found" });
-//         }
-
-//         connectionRequest.status = status;
-
-//         const data = await connectionRequest.save();
-
-//         res.json({ message: "Connection request " + status, data });
-
-//     } catch (err) {
-//         res.status(401).send("ERROR: " + err.message);
-//     }
-// });
 
 // respond to connection request (accept and reject) - POST /request/review/:status/:fromUserId
 requestRouter.post("/review/:status/:fromUserId", userAuth, async (req, res, next) => {
