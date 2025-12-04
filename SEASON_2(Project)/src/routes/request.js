@@ -14,19 +14,22 @@ const User = require("../models/user");
 
 requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) => {
     try {
-        const fromUserId = req.user._id;
+        const fromUserId = req.user._id;  // who is sending the connection request
         const toUserId = req.params.toUserId;
         const status = req.params.status;
 
+        // restricted into ignored and interested
         const allowedStatus = ["ignored", "interested"];
         if (!allowedStatus.includes(status)) {
-            return res.status(400).json({ message: "Invalid status" });
+            return res.status(404).json({ message: "Invalid status" });
         }
 
+        // to prevent form the send request to yourself
         if (fromUserId.toString() === toUserId) {
             return next(new Error("You cannot send request to yourself!"));
         }
 
+        // If there is an existing ConnectionRequest
         const existing = await ConnectionRequest.findOne({
             $or: [
                 { fromUserId, toUserId },
@@ -38,19 +41,24 @@ requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) =
             return res.status(400).json({ message: "Request already exists!" });
         }
 
+        // This is used to check the toUser exists
         const toUser = await User.findById(toUserId);
         if (!toUser) {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // Save the connection request
         const connectionRequest = new ConnectionRequest({
             fromUserId,
             toUserId,
             status,
         });
 
-        const data = await connectionRequest.save();
+        const data = await connectionRequest.save();  // This connetcion request will save it into DB
 
+        // Send the response back
+        // req.user.firstName → the user who is sending the request
+        // toUser.firstName → the user who receives the request
         res.json({
             message: `${req.user.firstName} is interested in ${toUser.firstName}`,
             data,
