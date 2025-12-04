@@ -16,6 +16,7 @@ const connectionRequestSchema = new mongoose.Schema(
     // Store the information of userId of reciever
     toUserId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true
     },
 

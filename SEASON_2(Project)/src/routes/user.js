@@ -71,6 +71,4 @@ userRouter.get("/user/connections", userAuth, async (req, res, next) => {
     }
 });
 
-
-
 module.exports = userRouter;
