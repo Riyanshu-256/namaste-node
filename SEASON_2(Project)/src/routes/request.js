@@ -11,7 +11,6 @@ const User = require("../models/user");
 
 // SEND CONNECTION REQUEST
 // ROUTE → /request/send/:status/:toUserId
-
 requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) => {
     try {
         const fromUserId = req.user._id;  // who is sending the connection request
@@ -70,21 +69,16 @@ requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) =
 });
 
 
-// REVIEW REQUEST (ACCEPT / REJECT)
-// Route → POST /request/review/:status/:requestId
-
-
-
 // respond to connection request (accept and reject) - POST /request/review/:status/:fromUserId
 requestRouter.post("/review/:status/:fromUserId", userAuth, async (req, res, next) => {
-    const toUserId = req.user._id;
-    const fromUserId = req.params.fromUserId;
-    const status = req.params.status;
+    const toUserId = req.user._id;   // ID of the user who is currently logged in
+    const fromUserId = req.params.fromUserId;  // ID of the user who sent the connection request
+    const status = req.params.status;   // New status to update the request with (accepted or rejected)
 
     // validating status
-    const allowedStatuses = ["accepted", "rejected"];
-    if (!allowedStatuses.includes(status)) {
-        res.status(400);
+    const allowedStatus = ["accepted", "rejected"];
+    if (!allowedStatus.includes(status)) {
+        res.status(404);
         res.json({ message: "Status must be either accepted or rejected." });
         return;
     }

@@ -1,4 +1,4 @@
-// THIS FILE DEFINE CONNECTION BETWEEN 2 USERS //
+//----------------------- THIS FILE DEFINE CONNECTION BETWEEN 2 USERS ----------------------//
 
 // Import mongoose
 const mongoose = require("mongoose");

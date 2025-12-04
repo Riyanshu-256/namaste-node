@@ -22,7 +22,7 @@ const userRouter = require("./routes/user");
 // To use this above routes
 app.use("/", authRouter);
 app.use("/", profileRouter);
-app.use("/request", requestRouter);
+app.use("/", requestRouter);
 app.use("/", userRouter);
 
 // CONNECT DB + START SERVER
