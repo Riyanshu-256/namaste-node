@@ -4,7 +4,7 @@ const ConnectionRequest = require("../models/connectionRequest");
 const userRouter = express.Router();
 
 // get all the pending connection request
-userRouter.get("/user/request", userAuth, async (req, res) => {
+userRouter.get("/user/request/recieved", userAuth, async (req, res) => {
 
     try{
 
@@ -14,7 +14,9 @@ userRouter.get("/user/request", userAuth, async (req, res) => {
         // to find connection request
         const connectionRequest = await ConnectionRequest.find({
             toUserId: loggedInUser._id,
-        });
+            status: "interested",
+        }).populate("fromUserId", ["firstName", "lastName", "photoUrl", "age"]);
+
         res.json({
              message: "Data fetched successfully", 
              data: connectionRequest,
