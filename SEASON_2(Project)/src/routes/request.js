@@ -10,7 +10,7 @@ const User = require("../models/user");
 
 
 // SEND CONNECTION REQUEST
-// POST → /request/send/:status/:toUserId
+// ROUTE → /request/send/:status/:toUserId
 
 requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) => {
     try {
@@ -71,7 +71,7 @@ requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res, next) =
 
 
 // REVIEW REQUEST (ACCEPT / REJECT)
-// Correct Route → POST /request/review/:status/:requestId
+// Route → POST /request/review/:status/:requestId
 
 
 
