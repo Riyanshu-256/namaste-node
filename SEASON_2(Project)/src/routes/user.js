@@ -5,7 +5,7 @@ const  User  = require('../models/user');
 const userRouter = express.Router();
 
 // get all the pending connection request
-userRouter.get("/user/request/recieved", userAuth, async (req, res) => {
+userRouter.get("/user/request/received", userAuth, async (req, res) => {
 
     try{
 
@@ -24,7 +24,7 @@ userRouter.get("/user/request/recieved", userAuth, async (req, res) => {
             });
 
     } catch(err) {
-        res.statusCode(404).send("ERROR: " + err.message);
+        res.status(404).send("ERROR: " + err.message);
     }
 
 });
