@@ -35,8 +35,8 @@ const connectionRequestSchema = new mongoose.Schema(
   }
 );
 
+// Stop request if user sends request to themselves
 connectionRequestSchema.pre("send", function (next) {
-  // Stop request if user sends request to themselves
   if (this.fromUserId.equals(this.toUserId)) {
     return next(new Error("Cannot send connection request to yourself!"));
   }
