@@ -119,6 +119,4 @@ requestRouter.post("/review/:status/:fromUserId", userAuth, async (req, res, nex
     }
 });
 
-
-
 module.exports = requestRouter;
